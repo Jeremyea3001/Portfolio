@@ -695,7 +695,11 @@
             (portfolioData.projects || []).forEach(project => {
                 const count = parseInt(project.nbImages, 10) || 0;
                 for (let i = 1; i <= count; i++) {
-                    allImages.push({ src: `${project.imagePath}/screen${i}.png`, alt: `${project.title} - Image ${i}` });
+                    allImages.push({
+                        src: `${project.imagePath}/screen${i}.png`,
+                        alt: `${project.title} - Image ${i}`,
+                        projectTitle: project.title
+                    });
                 }
             });
 
@@ -710,7 +714,11 @@
             selected.forEach((image, index) => {
                 const item = document.createElement("div");
                 item.className = index === 0 ? "carousel-item active" : "carousel-item";
-                item.innerHTML = `<img src="${image.src}" class="d-block w-100" alt="${image.alt}" style="height: 450px; object-fit: contain; background: #0d1117;">`;
+                const query = encodeURIComponent(image.projectTitle);
+                item.innerHTML = `
+                    <a href="projects.html?projet=${query}" aria-label="Voir le projet ${image.projectTitle}">
+                        <img src="${image.src}" class="d-block w-100" alt="${image.alt}" style="height: 450px; object-fit: contain; background: #0d1117;">
+                    </a>`;
                 container.appendChild(item);
             });
         })();
