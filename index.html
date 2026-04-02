@@ -677,18 +677,8 @@
 
     <section class="container-fluid w-75 d-flex flex-column gap-5 justify-content-center align-items-center py-5" id="projets" data-aos="fade-up">
         <h1 class="text-primary text-center pt-5">Mes projets</h1>
-        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="images/Projets/Codex/screen1.png" class="d-block w-100" alt="Codex1">
-                </div>
-                <div class="carousel-item">
-                    <img src="images/Projets/Codex/screen2.png" class="d-block w-100" alt="Codex2">
-                </div>
-                <div class="carousel-item">
-                    <img src="images/Projets/Codex/screen3.png" class="d-block w-100" alt="Codex3">
-                </div>
-            </div>
+        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" style="width: 100%;">
+            <div class="carousel-inner" id="homeCarouselInner" style="height: 450px;"></div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: none"></span>
                 <span class="visually-hidden">Previous</span>
@@ -698,6 +688,33 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
+        <script>
+        (function buildHomeCarousel() {
+            // Collect all available screenshots from projects that have at least one image
+            const allImages = [];
+            (portfolioData.projects || []).forEach(project => {
+                const count = parseInt(project.nbImages, 10) || 0;
+                for (let i = 1; i <= count; i++) {
+                    allImages.push({ src: `${project.imagePath}/screen${i}.png`, alt: `${project.title} - Image ${i}` });
+                }
+            });
+
+            // Fisher-Yates shuffle, then take the first 6
+            for (let i = allImages.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allImages[i], allImages[j]] = [allImages[j], allImages[i]];
+            }
+            const selected = allImages.slice(0, 6);
+
+            const container = document.getElementById("homeCarouselInner");
+            selected.forEach((image, index) => {
+                const item = document.createElement("div");
+                item.className = index === 0 ? "carousel-item active" : "carousel-item";
+                item.innerHTML = `<img src="${image.src}" class="d-block w-100" alt="${image.alt}" style="height: 450px; object-fit: contain; background: #0d1117;">`;
+                container.appendChild(item);
+            });
+        })();
+        </script>
         <a class="btn btn-primary fs-5 px-5 py-2" href="projects.html">Voir plus</a>
     </section>
 
