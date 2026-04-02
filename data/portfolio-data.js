@@ -286,7 +286,7 @@
       "type": "Site Web",
       "date": "2026-03-17",
       "imagePath": "images/Projets/U-Activity",
-      "nbImages": 0,
+      "nbImages": 3,
       "short": "Un projet de SAE visant a centraliser la gestion des activites universitaires sportives et culturelles.",
       "description": "U-Activity est une application web et mobile conçue pour centraliser et simplifier la gestion des activités de l'Université Gustave Eiffel. Le projet répond à un besoin concret: remplacer une organisation basée principalement sur les emails par une plateforme unique, lisible et plus efficace pour les étudiants, organisateurs et administrateurs.\n\nLa solution propose l'inscription et le suivi des activités, un catalogue avec recherche avancée et filtres, une messagerie interne, un système de notifications en temps réel, la gestion des paiements, ainsi qu'un calendrier de planification.\n\nôté technique, nous avons développé le site avec React et TailwindCSS, le back-end avec Node.js et Express via des API REST, la base de données avec MySQL, et une application mobile Java sous Android Studio. Le projet a été mené en méthode Agile avec un fort travail d'équipe, de tests et de validation, pour aboutir à une plateforme fonctionnelle, sécurisée et prête à être utilisée en contexte réel.",
       "objective": "Centraliser les informations, inscriptions et échanges autour des activités universitaires dans une plateforme unique, accessible et efficace.",
