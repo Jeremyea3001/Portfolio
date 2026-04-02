@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="fr-FR">
+<head>
+    <title>Mes projets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background: #1e1e2e;
+        }
+        .project-card {
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            background: rgba(13, 110, 253, 0.05);
+            border: 1px solid rgba(13, 110, 253, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(13, 110, 253, 0.3);
+            background: rgba(13, 110, 253, 0.08);
+        }
+        .project-card .card-img-top {
+            transition: transform 0.3s ease-in-out;
+            height: 220px;
+            object-fit: contain;
+        }
+        .project-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+        .project-card .card-text {
+            margin-bottom: 0.25rem;
+        }
+        .project-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+        .project-modal-image {
+            width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            background: #0d1117;
+        }
+        .pagination {
+            justify-content: center;
+        }
+        .pagination .page-link {
+            background-color: #1e1e2e;
+            border-color: rgba(13, 110, 253, 0.3);
+            color: white;
+            transition: all 0.3s;
+        }
+        .pagination .page-link:hover {
+            background-color: rgba(13, 110, 253, 0.2);
+            border-color: var(--bs-primary);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+        .form-control, .form-select {
+            background-color: rgba(13, 110, 253, 0.05);
+            border: 1px solid rgba(13, 110, 253, 0.2);
+            color: white;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            color: white;
+        }
+        .form-select option {
+            background-color: #1e1e2e;
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar sticky-top p-4" style="background-color: #0d1117; border-bottom: 2px solid var(--bs-primary); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
+    <a href="index.html" class="btn btn-outline-primary">← Retour</a>
+</header>
+
+<main class="d-flex flex-column justify-content-center align-items-center py-5">
+    <div class="container">
+        <h1 class="text-center text-primary mb-5 fw-bold">Mes Projets</h1>
+
+        <div class="row mb-4 g-3 align-items-end">
+            <div class="row mb-2 g-3">
+                <div class="col-12">
+                    <label for="searchInput" class="form-label">Rechercher un projet</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tapez un titre...">
+                </div>
+            </div>
+
+            <div class="row mb-4 g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="languageFilter" class="form-label">Filtrer par langage</label>
+                    <select id="languageFilter" class="form-select">
+                        <option value="">Tous</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="typeFilter" class="form-label">Filtrer par type</label>
+                    <select id="typeFilter" class="form-select">
+                        <option value="">Tous</option>
+                        <option value="Application">Application</option>
+                        <option value="Site Web">Site Web</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="sortDate" class="form-label">Trier par date</label>
+                    <select id="sortDate" class="form-select">
+                        <option value="desc">Plus recent</option>
+                        <option value="asc">Plus ancien</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="projectList"></div>
+
+        <nav>
+            <ul class="pagination mt-4" id="pagination"></ul>
+        </nav>
+    </div>
+
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content" style="background: #1e1e2e; border: 2px solid rgba(13, 110, 253, 0.3);">
+                <div class="modal-header border-bottom border-primary">
+                    <h5 class="modal-title text-primary fw-bold" id="projectModalLabel"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="projectCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="projectModalImages"></div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="border border-primary-subtle rounded-3 p-3 h-100">
+                                <div class="text-primary fw-bold mb-2">Taille de l'equipe</div>
+                                <div id="projectModalTeam" class="text-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border border-primary-subtle rounded-3 p-3 h-100">
+                                <div class="text-primary fw-bold mb-2">Langages utilises</div>
+                                <div id="projectModalLanguages" class="d-flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border border-primary-subtle rounded-3 p-3 h-100">
+                                <div class="text-primary fw-bold mb-2">Objectif du projet</div>
+                                <p id="projectModalObjective" class="text-light mb-0"></p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border border-primary-subtle rounded-3 p-3 h-100">
+                                <div class="text-primary fw-bold mb-2">Competences acquises</div>
+                                <div id="projectModalSkills" class="d-flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border border-primary-subtle rounded-3 p-3 h-100">
+                                <div class="text-primary fw-bold mb-2">Description</div>
+                                <div id="projectModalDescription" class="text-light"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-primary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="py-5" style="background: #0d1117; border-top: 2px solid var(--bs-primary);">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h5 class="text-primary fw-bold mb-3">Reseaux sociaux</h5>
+                <a href="https://www.linkedin.com/in/jeremy-zheng-jz/" class="d-inline-block mb-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="images/Autres/linkedin.png" alt="Mon profil Linkedin" style="width: 50px; height: 50px;">
+                </a>
+            </div>
+            <div class="col-md-8">
+                <h5 class="text-primary fw-bold mb-3">Contactez-moi</h5>
+                <form action="#" method="post" onsubmit="event.preventDefault();">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="nom" class="form-label text-light">Nom</label>
+                            <input type="text" name="nom" class="form-control" placeholder="Votre nom" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label text-light">Adresse e-mail</label>
+                            <input type="email" name="email" class="form-control" placeholder="adresse@mail.com" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label text-light">Message</label>
+                        <textarea name="message" class="form-control" placeholder="Votre message" rows="5" required></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Envoyer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="data/portfolio-data.js"></script>
+<script>
+    const perPage = 6;
+    let currentPage = 1;
+    let projects = [];
+    let languages = [];
+    let languageMap = new Map();
+
+    function renderLanguageFilter() {
+        const select = document.getElementById("languageFilter");
+        const names = [...new Set(projects.flatMap(project => project.language || []))].sort((a, b) => a.localeCompare(b));
+        names.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+        });
+    }
+
+    function getFilteredProjects() {
+        const type = document.getElementById("typeFilter").value;
+        const language = document.getElementById("languageFilter").value;
+        const sortOrder = document.getElementById("sortDate").value;
+        const searchText = document.getElementById("searchInput").value.toLowerCase();
+
+        const filtered = projects.filter(project =>
+            (!type || project.type === type) &&
+            (!language || project.language.includes(language)) &&
+            (!searchText || project.title.toLowerCase().includes(searchText))
+        );
+
+        filtered.sort((a, b) => sortOrder === "asc"
+            ? new Date(a.date) - new Date(b.date)
+            : new Date(b.date) - new Date(a.date));
+
+        return filtered;
+    }
+
+    function renderPagination(total) {
+        const pageCount = Math.ceil(total / perPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= pageCount; i++) {
+            const li = document.createElement("li");
+            li.className = `page-item ${i === currentPage ? "active" : ""}`;
+            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            li.addEventListener("click", event => {
+                event.preventDefault();
+                currentPage = i;
+                renderProjects();
+            });
+            pagination.appendChild(li);
+        }
+    }
+
+    function renderProjects() {
+        const filtered = getFilteredProjects();
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        const visible = filtered.slice(start, end);
+
+        const projectList = document.getElementById("projectList");
+        projectList.innerHTML = visible.map(project => `
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card text-white project-card h-100"
+                     role="button"
+                     data-bs-toggle="modal"
+                     data-bs-target="#projectModal"
+                     data-bs-project-id="${project.id}">
+                    <img src="${project.image}" class="card-img-top" alt="${project.title}">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">${project.title}</h5>
+                        <p class="card-text text-light">${project.short}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">${project.type}</small>
+                            <small class="text-muted">${new Date(project.date).toLocaleDateString("fr-FR", { year: "numeric", month: "short" })}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+
+        renderPagination(filtered.length);
+    }
+
+    function renderBadges(containerId, items, badgeClass) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        if (items.length === 0) {
+            const empty = document.createElement("span");
+            empty.className = "text-muted";
+            empty.textContent = "Non renseigne";
+            container.appendChild(empty);
+            return;
+        }
+
+        items.forEach(item => {
+            const badge = document.createElement("span");
+            badge.className = `badge ${badgeClass}`;
+            badge.textContent = item;
+            container.appendChild(badge);
+        });
+    }
+
+    function renderParagraphText(containerId, text) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        const paragraphs = (text || "").split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+
+        if (paragraphs.length === 0) {
+            container.textContent = "Non renseigne";
+            return;
+        }
+
+        paragraphs.forEach((paragraph, index) => {
+            const p = document.createElement("p");
+            p.textContent = paragraph;
+            p.className = index === paragraphs.length - 1 ? "mb-0" : "mb-2";
+            container.appendChild(p);
+        });
+    }
+
+    function setupModal() {
+        const projectModal = document.getElementById("projectModal");
+
+        projectModal.addEventListener("show.bs.modal", event => {
+            const card = event.relatedTarget;
+            if (!card) return;
+
+            const projectId = parseInt(card.getAttribute("data-bs-project-id"), 10);
+            const projectData = projects.find(project => project.id === projectId);
+            if (!projectData) return;
+
+            document.getElementById("projectModalLabel").textContent = projectData.title;
+            document.getElementById("projectModalTeam").textContent = projectData.taille
+                ? `${projectData.taille} personne${parseInt(projectData.taille, 10) > 1 ? "s" : ""}`
+                : "Non renseigne";
+            document.getElementById("projectModalObjective").textContent = projectData.objective || "Non renseigne";
+
+            const skills = (projectData.skills || "").split(",").map(item => item.trim()).filter(Boolean);
+            renderBadges("projectModalLanguages", projectData.language, "bg-primary");
+            renderBadges("projectModalSkills", skills, "bg-success");
+            renderParagraphText("projectModalDescription", projectData.description || "");
+
+            const imagesContainer = document.getElementById("projectModalImages");
+            imagesContainer.innerHTML = "";
+
+            if (projectData.nbImages > 0) {
+                for (let i = 1; i <= projectData.nbImages; i++) {
+                    const carouselItem = document.createElement("div");
+                    carouselItem.className = i === 1 ? "carousel-item active" : "carousel-item";
+
+                    const img = document.createElement("img");
+                    img.src = `${projectData.imagePath}/screen${i}.png`;
+                    img.alt = `${projectData.title} - Image ${i}`;
+                    img.className = "d-block w-100 rounded shadow project-modal-image";
+
+                    carouselItem.appendChild(img);
+                    imagesContainer.appendChild(carouselItem);
+                }
+            } else {
+                const carouselItem = document.createElement("div");
+                carouselItem.className = "carousel-item active";
+
+                const img = document.createElement("img");
+                img.src = `${projectData.imagePath}/screen1.png`;
+                img.alt = projectData.title;
+                img.className = "d-block w-100 rounded shadow project-modal-image";
+
+                carouselItem.appendChild(img);
+                imagesContainer.appendChild(carouselItem);
+            }
+        });
+    }
+
+    function setupFilters() {
+        ["languageFilter", "typeFilter", "sortDate", "searchInput"].forEach(id => {
+            const eventName = id === "searchInput" ? "input" : "change";
+            document.getElementById(id).addEventListener(eventName, () => {
+                currentPage = 1;
+                renderProjects();
+            });
+        });
+    }
+
+    function prefillSearchFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        const value = params.get("projet");
+        if (value) {
+            document.getElementById("searchInput").value = value;
+        }
+    }
+
+    function init() {
+        const data = portfolioData;
+
+        languages = data.languages || [];
+        projects = (data.projects || []).map(project => {
+            const resolvedLanguages = (project.languageIds || [])
+                .map(id => (data.languages || []).find(language => language.id === id)?.name)
+                .filter(Boolean);
+
+            return {
+                ...project,
+                language: resolvedLanguages,
+                image: `${project.imagePath}/screen1.png`
+            };
+        });
+
+        languageMap = new Map(languages.map(language => [language.id, language.name]));
+
+        prefillSearchFromQuery();
+        renderLanguageFilter();
+        setupFilters();
+        setupModal();
+        renderProjects();
+    }
+
+    init();
+</script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+</html>
